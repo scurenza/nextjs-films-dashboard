@@ -42,6 +42,32 @@ export async function fetchLatestInvoices() {
   }
 }
 
+export async function fetchFilteredFilms(query: string, currentPage: number) {
+  const res = await fetch(`https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=${currentPage}`, {
+    method: 'GET',
+    headers: {
+      'accept': 'application/json',
+      Authorization: `Bearer ${process.env.BEARER_TOKEN}`,
+    }
+  });
+
+  const data = await res.json();
+  return Response.json(data);
+}
+
+export async function fetchFilteredfilmsPages(query: string) {
+  const res = await fetch(`https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`, {
+    method: 'GET',
+    headers: {
+      'accept': 'application/json',
+      Authorization: `Bearer ${process.env.BEARER_TOKEN}`,
+    }
+  });
+
+  const data = await res.json();
+  return Response.json(data);
+}
+
 export async function fetchCardData() {
   try {
     // You can probably combine these into a single SQL query
