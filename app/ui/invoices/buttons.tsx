@@ -1,5 +1,13 @@
+"use client";
 import { deleteInvoice } from "@/app/lib/actions";
-import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { Film } from "@/app/types/film";
+import {
+  PencilIcon,
+  PlusIcon,
+  TrashIcon,
+  EyeIcon,
+  EyeSlashIcon,
+} from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 export function CreateInvoice() {
@@ -14,25 +22,45 @@ export function CreateInvoice() {
   );
 }
 
-export function UpdateInvoice({ id }: { id: string }) {
+export function DaVedere({ film }: { film: Film }) {
+  // return (
+  //   <Link
+  //     href={`/dashboard/invoices/${id}/edit`}
+  //     className="rounded-md border p-2 hover:bg-gray-100"
+  //   >
+  //     <PencilIcon className="w-5" />
+  //   </Link>
+  // );
   return (
-    <Link
-      href={`/dashboard/invoices/${id}/edit`}
-      className="rounded-md border p-2 hover:bg-gray-100"
+    <button
+      className="flex flex-col items-center justify-center border-solid border-2 border-gray-200 rounded-md p-2 hover:bg-gray-100"
+      onClick={() => console.log(film)}
     >
-      <PencilIcon className="w-5" />
-    </Link>
+      <EyeIcon className="h-6 w-6 text-gray-500" />
+      <p>Da Vedere</p>
+    </button>
   );
 }
 
-export function DeleteInvoice({ id }: { id: string }) {
-  const deleteInvoiceWithId = deleteInvoice.bind(null, id);
+export function Visto({ film }: { film: Film }) {
+  console.log(film);
+
+  // const deleteInvoiceWithId = deleteInvoice.bind(null, id);
+  // return (
+  //   <form action={deleteInvoiceWithId}>
+  //     <button type="submit" className="rounded-md border p-2 hover:bg-gray-100">
+  //       <span className="sr-only">Delete</span>
+  //       <TrashIcon className="w-5" />
+  //     </button>
+  //   </form>
+  // );
   return (
-    <form action={deleteInvoiceWithId}>
-      <button type="submit" className="rounded-md border p-2 hover:bg-gray-100">
-        <span className="sr-only">Delete</span>
-        <TrashIcon className="w-5" />
-      </button>
-    </form>
+    <button
+      className="flex flex-col items-center justify-center border-solid border-2 border-gray-200 rounded-md p-2 hover:bg-gray-100"
+      onClick={() => console.log(film)}
+    >
+      <EyeSlashIcon className="h-6 w-6 text-gray-500" />
+      Visto
+    </button>
   );
 }
