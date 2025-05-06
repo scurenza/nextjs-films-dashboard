@@ -1,14 +1,19 @@
 "use client";
-import { deleteInvoice } from "@/app/lib/actions";
-import { Film } from "@/app/types/film";
 import {
-  PencilIcon,
+  addFilmToDaVedere,
+  addFilmToVisto,
+  rimuoviFilm,
+} from "@/app/lib/actions";
+import { Film } from "@/app/types/film";
+import { FilmPage } from "@/app/types/filmPage";
+import {
   PlusIcon,
   TrashIcon,
   EyeIcon,
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export function CreateInvoice() {
   return (
@@ -22,45 +27,112 @@ export function CreateInvoice() {
   );
 }
 
-export function DaVedere({ film }: { film: Film }) {
-  // return (
-  //   <Link
-  //     href={`/dashboard/invoices/${id}/edit`}
-  //     className="rounded-md border p-2 hover:bg-gray-100"
-  //   >
-  //     <PencilIcon className="w-5" />
-  //   </Link>
-  // );
+export function DaVedere({
+  film,
+  userId,
+  page,
+}: {
+  film: Film;
+  userId: string;
+  page?: FilmPage;
+}) {
+  async function handleClick() {
+    const result = await addFilmToDaVedere(film, userId);
+    if (page && result.status === "success") rimuoviFilm(film, userId, page);
+
+    toast(result.message, {
+      duration: 3000,
+      style: {
+        backgroundColor:
+          result.status === "success"
+            ? "#d1fae5"
+            : result.status === "exists"
+            ? "#fef9c3"
+            : "#fecaca",
+      },
+    });
+  }
+
   return (
     <button
+      onClick={handleClick}
       className="flex flex-col items-center justify-center border-solid border-2 border-gray-200 rounded-md p-2 hover:bg-gray-100"
-      onClick={() => console.log(film)}
     >
       <EyeIcon className="h-6 w-6 text-gray-500" />
-      <p>Da Vedere</p>
+      <p className="hidden md:block">Da Vedere</p>
     </button>
   );
 }
 
-export function Visto({ film }: { film: Film }) {
-  console.log(film);
+export function Visto({
+  film,
+  userId,
+  page,
+}: {
+  film: Film;
+  userId: string;
+  page?: FilmPage;
+}) {
+  async function handleClick() {
+    const result = await addFilmToVisto(film, userId);
 
-  // const deleteInvoiceWithId = deleteInvoice.bind(null, id);
-  // return (
-  //   <form action={deleteInvoiceWithId}>
-  //     <button type="submit" className="rounded-md border p-2 hover:bg-gray-100">
-  //       <span className="sr-only">Delete</span>
-  //       <TrashIcon className="w-5" />
-  //     </button>
-  //   </form>
-  // );
+    if (page && result.status === "success") rimuoviFilm(film, userId, page);
+
+    toast(result.message, {
+      duration: 3000,
+      style: {
+        backgroundColor:
+          result.status === "success"
+            ? "#d1fae5"
+            : result.status === "exists"
+            ? "#fef9c3"
+            : "#fecaca",
+      },
+    });
+  }
+
   return (
     <button
       className="flex flex-col items-center justify-center border-solid border-2 border-gray-200 rounded-md p-2 hover:bg-gray-100"
-      onClick={() => console.log(film)}
+      onClick={handleClick}
     >
       <EyeSlashIcon className="h-6 w-6 text-gray-500" />
-      Visto
+      <p className="hidden md:block">Visto</p>
+    </button>
+  );
+}
+
+export function Rimuovi({
+  film,
+  userId,
+  page,
+}: {
+  film: Film;
+  userId: string;
+  page: FilmPage;
+}) {
+  async function handleClick() {
+    const result = await rimuoviFilm(film, userId, page);
+
+    toast(result.message, {
+      duration: 3000,
+      style: {
+        backgroundColor:
+          result.status === "success"
+            ? "#d1fae5"
+            : result.status === "exists"
+            ? "#fef9c3"
+            : "#fecaca",
+      },
+    });
+  }
+  return (
+    <button
+      className="flex flex-col items-center justify-center border-solid border-2 border-gray-200 rounded-md p-2 hover:bg-gray-100"
+      onClick={handleClick}
+    >
+      <TrashIcon className="h-6 w-6 text-gray-500" />
+      <p className="hidden md:block">Rimuovi</p>
     </button>
   );
 }

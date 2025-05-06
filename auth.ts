@@ -9,7 +9,7 @@ import postgres from 'postgres';
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 
-async function getUser(email: string): Promise<User | undefined> {
+export async function getUser(email: string): Promise<User | undefined> {
     try {
         const user = await sql<User[]>`SELECT * FROM users WHERE email=${email}`;
         return user[0];
@@ -17,6 +17,18 @@ async function getUser(email: string): Promise<User | undefined> {
         console.error('Failed to fetch user:', error);
         throw new Error('Failed to fetch user.');
     }
+}
+
+export async function getUserData(): Promise<User | undefined> {
+    try {
+        const session = await auth();
+        const user = await getUser(session?.user?.email || "");
+        return user;
+    } catch (error) {
+        console.error('Failed to fetch user:', error);
+        throw new Error('Failed to fetch user id.');
+    }
+
 }
 
 export const { auth, signIn, signOut } = NextAuth({

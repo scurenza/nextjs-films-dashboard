@@ -3,6 +3,7 @@ export type Film = {
     "backdrop_path": string,
     "genre_ids": number[],
     "id": number,
+    "themoviedb_id"?: number,
     "original_language": string,
     "original_title": string,
     "overview": string,

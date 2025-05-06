@@ -1,15 +1,12 @@
 import Pagination from "@/app/ui/invoices/pagination";
 import Search from "@/app/ui/search";
 import Table from "@/app/ui/invoices/table";
-import { CreateInvoice } from "@/app/ui/invoices/buttons";
 import { lusitana } from "@/app/ui/fonts";
 import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
-import {
-  fetchFilteredFilms,
-  fetchFilteredfilmsPages,
-  fetchInvoicesPages,
-} from "@/app/lib/data";
+import { fetchInvoicesPages } from "@/app/lib/data";
+import { fetchFilteredfilmsPages } from "@/app/lib/actions";
+import { FilmPage } from "@/app/types/filmPage";
 
 export default async function Page(props: {
   searchParams?: Promise<{
@@ -20,7 +17,6 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
-  const totalPages = await fetchInvoicesPages(query);
 
   const response = await fetchFilteredfilmsPages(query);
   const totalPagesFilms = await response.json();
@@ -31,18 +27,15 @@ export default async function Page(props: {
         <h1 className={`${lusitana.className} text-2xl`}>Cerca un film</h1>
       </div>
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <Search placeholder="Search invoices..." />
-        {/* <CreateInvoice /> */}
+        <Search placeholder="Cerca il titolo di un film..." />
       </div>
       <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
-        {query != "" ? (
-          <Table query={query} currentPage={currentPage} />
-        ) : (
-          <div>
-            <p className="text-center mt-4 text-2xl font-semibold text-gray-500">
-              Cerca il titolo di un film
-            </p>
-          </div>
+        {query && (
+          <Table
+            query={query}
+            currentPage={currentPage}
+            page={FilmPage.CercaUnFilm}
+          />
         )}
       </Suspense>
       {query && (

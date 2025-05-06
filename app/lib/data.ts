@@ -42,37 +42,69 @@ export async function fetchLatestInvoices() {
   }
 }
 
-export async function fetchFilteredFilms(query: string, currentPage: number) {
-  const res = await fetch(`https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=${currentPage}`, {
-    method: 'GET',
-    headers: {
-      'accept': 'application/json',
-      Authorization: `Bearer ${process.env.BEARER_TOKEN}`,
-    }
-  });
+export async function fetchFilteredFilmsDaVedere(userId: string, currentPage: number) {
+  try {
+    const result = await sql`
+      SELECT *
+      FROM da_vedere
+      WHERE user_id = ${userId}
+      ORDER BY release_date DESC
+      LIMIT 20 OFFSET ${(currentPage - 1) * 20}
+    `;
 
-  const data = await res.json();
-  return Response.json(data);
+    return result;
+  }
+  catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch da vedere films.');
+  }
 }
 
-export async function fetchFilteredfilmsPages(query: string) {
-  const res = await fetch(`https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`, {
-    method: 'GET',
-    headers: {
-      'accept': 'application/json',
-      Authorization: `Bearer ${process.env.BEARER_TOKEN}`,
-    }
-  });
+export async function fetchTotalFilmsDaVedere(userId: string) {
+  try {
+    const result = await sql`
+      SELECT COUNT(*) FROM da_vedere WHERE user_id = ${userId}
+    `;
+    return Number(result[0].count);
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to count da vedere films.');
+  }
+}
 
-  const data = await res.json();
-  return Response.json(data);
+
+export async function fetchFilteredFilmsVisto(userId: string, currentPage: number) {
+  try {
+    const result = await sql`
+      SELECT *
+      FROM visto
+      WHERE user_id = ${userId}
+      ORDER BY release_date DESC
+      LIMIT 20 OFFSET ${(currentPage - 1) * 20}
+    `;
+
+    return result;
+  }
+  catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch visto films.');
+  }
+}
+
+export async function fetchTotalFilmsVisto(userId: string): Promise<number> {
+  try {
+    const result = await sql`
+      SELECT COUNT(*) FROM visto WHERE user_id = ${userId}
+    `;
+    return Number(result[0].count);
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to count visto films.');
+  }
 }
 
 export async function fetchCardData() {
   try {
-    // You can probably combine these into a single SQL query
-    // However, we are intentionally splitting them to demonstrate
-    // how to initialize multiple queries in parallel with JS.
     const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices`;
     const customerCountPromise = sql`SELECT COUNT(*) FROM customers`;
     const invoiceStatusPromise = sql`SELECT

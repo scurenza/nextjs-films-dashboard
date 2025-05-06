@@ -6,6 +6,8 @@ import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import bcrypt from 'bcrypt';
+import { Film } from '../types/film';
+import { FilmPage } from '../types/filmPage';
 
 export type State = {
     errors?: {
@@ -86,6 +88,127 @@ export async function createInvoice(prevState: State, formData: FormData) {
     redirect('/dashboard/invoices');
 }
 
+export async function addFilmToDaVedere(film: Film, userId: string) {
+    const tmdbId = film.themoviedb_id || film.id;
+    const response = await fetchImdbId(film.id);
+    const imdb = await response.json();
+
+    console.log("imdb: ", imdb);
+    console.log("film: ", film);
+
+    const existing = await sql`
+      SELECT 1 FROM da_vedere
+      WHERE themoviedb_id = ${tmdbId} AND user_id = ${userId}
+      LIMIT 1
+    `;
+
+    if (existing.length > 0) {
+        return {
+            status: "exists",
+            message: "Il film è già nella tua lista.",
+        };
+    }
+
+    try {
+        await sql`
+        INSERT INTO da_vedere (
+          themoviedb_id, imdb_id, poster_path, original_title,
+          overview, release_date, vote_average, user_id
+        )
+        VALUES (
+          ${tmdbId}, ${imdb.imdb_id}, ${film.poster_path},
+          ${film.original_title}, ${film.overview},
+          ${film.release_date}, ${film.vote_average}, ${userId}
+        )
+      `;
+
+        revalidatePath('/dashboard/cerca-un-film');
+
+        return {
+            status: "success",
+            message: "Film aggiunto correttamente!",
+        };
+    } catch (error) {
+        console.error("Errore durante l'inserimento:", error);
+        return {
+            status: "error",
+            message: "Errore durante l'aggiunta del film.",
+        };
+    }
+}
+
+export async function addFilmToVisto(film: Film, userId: string) {
+    const tmdbId = film.themoviedb_id || film.id;
+
+    const response = await fetchImdbId(tmdbId);
+    const imdb = await response.json();
+
+    const existing = await sql`
+      SELECT 1 FROM visto
+      WHERE themoviedb_id = ${tmdbId} AND user_id = ${userId}
+      LIMIT 1
+    `;
+
+    if (existing.length > 0) {
+        return {
+            status: "exists",
+            message: "Il film è già nella tua lista.",
+        };
+    }
+
+    try {
+        await sql`
+        INSERT INTO visto (
+          themoviedb_id, imdb_id, poster_path, original_title,
+          overview, release_date, vote_average, user_id
+        )
+        VALUES (
+          ${tmdbId}, ${imdb.imdb_id}, ${film.poster_path},
+          ${film.original_title}, ${film.overview},
+          ${film.release_date}, ${film.vote_average}, ${userId}
+        )
+      `;
+
+        revalidatePath('/dashboard/cerca-un-film');
+
+        return {
+            status: "success",
+            message: "Film aggiunto correttamente!",
+        };
+    } catch (error) {
+        console.error("Errore durante l'inserimento:", error);
+        return {
+            status: "error",
+            message: "Errore durante l'aggiunta del film.",
+        };
+    }
+}
+
+
+export async function rimuoviFilm(film: Film, userId: string, page: FilmPage) {
+
+    try {
+        if (page === FilmPage.DaVedere) {
+            await sql`DELETE FROM da_vedere WHERE id = ${film.id} AND user_id = ${userId}`;
+        }
+        if (page === FilmPage.Visto) {
+            await sql`DELETE FROM visto WHERE id = ${film.id} AND user_id = ${userId}`;
+        }
+        revalidatePath('/dashboard/cerca-un-film');
+
+        return {
+            status: "success",
+            message: "Film rimosso correttamente!",
+        };
+    } catch (error) {
+        console.error("Errore durante la rimozione:", error);
+        return {
+            status: "error",
+            message: "Errore durante la rimozione del film.",
+        };
+    }
+}
+
 
 export async function registerUser(prevState: RegisterState, formData: FormData) {
     const validatedFields = RegisterUserSchema.safeParse({
@@ -132,9 +255,9 @@ export async function registerUser(prevState: RegisterState, formData: FormData)
 
     await authenticate(undefined, formData);
 
-    // Redirect to login page without precompiling the form
+
     revalidatePath('/dashboard');
-    redirect('/dashboard');  // Just redirect to the login page
+    redirect('/dashboard');
 }
 
 
@@ -164,6 +287,45 @@ export async function updateInvoice(id: string, formData: FormData) {
 export async function deleteInvoice(id: string) {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
     revalidatePath('/dashboard/invoices');
+}
+
+export async function fetchFilteredFilms(query: string, currentPage: number) {
+    const res = await fetch(`https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=${currentPage}`, {
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            Authorization: `Bearer ${process.env.BEARER_TOKEN}`,
+        }
+    });
+
+    const data = await res.json();
+    return Response.json(data);
+}
+
+export async function fetchImdbId(movieDbId: number) {
+    const res = await fetch(`https://api.themoviedb.org/3/movie/${movieDbId}/external_ids`, {
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            Authorization: `Bearer ${process.env.BEARER_TOKEN}`,
+        }
+    });
+
+    const data = await res.json();
+    return Response.json(data);
+}
+
+export async function fetchFilteredfilmsPages(query: string) {
+    const res = await fetch(`https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`, {
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            Authorization: `Bearer ${process.env.BEARER_TOKEN}`,
+        }
+    });
+
+    const data = await res.json();
+    return Response.json(data);
 }
 
 export async function authenticate(
