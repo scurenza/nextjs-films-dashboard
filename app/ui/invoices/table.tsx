@@ -1,9 +1,6 @@
 import Image from "next/image";
-import InvoiceStatus from "@/app/ui/invoices/status";
-import { formatDateToLocal, formatCurrency } from "@/app/lib/utils";
 import { Progress } from "@/components/ui/progress";
-import { DaVedere, Rimuovi, Visto } from "./buttons";
-import { auth, getUser, getUserData } from "@/auth";
+import { getUserData } from "@/auth";
 import { fetchFilteredFilms } from "@/app/lib/actions";
 import {
   fetchFilteredFilmsDaVedere,
@@ -68,7 +65,7 @@ export default async function InvoicesTable({
                 <div className="flex items-center justify-between border-b pb-4">
                   <div className="mb-2 w-1/4">
                     <Image
-                      src={base_image_url + film.poster_path}
+                      src={mobile_base_image_url + film.poster_path}
                       className=""
                       width={45}
                       height={45}

@@ -4,7 +4,6 @@ import Table from "@/app/ui/invoices/table";
 import { lusitana } from "@/app/ui/fonts";
 import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
-import { fetchInvoicesPages } from "@/app/lib/data";
 import { fetchFilteredfilmsPages } from "@/app/lib/actions";
 import { FilmPage } from "@/app/types/filmPage";
 

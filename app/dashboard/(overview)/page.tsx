@@ -11,8 +11,8 @@ export default async function Page() {
           <h2 className="capitalize text-center mb-2">Tutto molto semplice</h2>
           <ol className="list-decimal list-inside">
             <li>Cerca un film</li>
-            <li>Mettilo tra i film "Da Vedere"</li>
-            <li>Oppure tra i film "Visti"</li>
+            <li>Mettilo tra i film &quot;Da Vedere&quot;</li>
+            <li>Oppure tra i film &quot;Visti&quot;</li>
           </ol>
         </div>
       </div>

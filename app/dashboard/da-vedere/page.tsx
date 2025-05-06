@@ -23,8 +23,6 @@ export default async function Page(props: {
 
   const user = await getUserData();
 
-  const response = await fetchFilteredFilmsDaVedere(user!.id, currentPage);
-
   const totalCount = await fetchTotalFilmsDaVedere(user!.id);
   const totalPagesFilms = Math.ceil(totalCount / 20);
 
