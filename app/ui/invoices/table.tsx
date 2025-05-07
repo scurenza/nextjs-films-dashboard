@@ -8,6 +8,7 @@ import {
 } from "@/app/lib/data";
 import { FilmActions } from "../dashboard/filmActions";
 import { FilmPage } from "@/app/types/filmPage";
+import { Film } from "@/app/types/film";
 
 export default async function InvoicesTable({
   query,
@@ -24,16 +25,22 @@ export default async function InvoicesTable({
   const base_image_url = "https://image.tmdb.org/t/p/w92";
   const mobile_base_image_url = "https://image.tmdb.org/t/p/w45";
 
-  let results: any[] = [];
+  let results: Film[] = [];
 
   if (page === FilmPage.CercaUnFilm && query) {
     const response = await fetchFilteredFilms(query, currentPage);
     const films = await response.json();
     results = films.results;
   } else if (page === FilmPage.DaVedere && userId) {
-    results = await fetchFilteredFilmsDaVedere(userId, currentPage);
+    results = (await fetchFilteredFilmsDaVedere(
+      userId,
+      currentPage
+    )) as unknown as Film[];
   } else if (page === FilmPage.Visto && userId) {
-    results = await fetchFilteredFilmsVisto(userId, currentPage);
+    results = (await fetchFilteredFilmsVisto(
+      userId,
+      currentPage
+    )) as unknown as Film[];
   }
 
   function formatDate(dateString: string) {
@@ -139,7 +146,7 @@ export default async function InvoicesTable({
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {results.map((film: any) => (
+                {results.map((film: Film) => (
                   <tr
                     key={film.id}
                     className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"

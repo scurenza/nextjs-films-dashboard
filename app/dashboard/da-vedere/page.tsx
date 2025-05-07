@@ -5,10 +5,7 @@ import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
 
 import { getUserData } from "@/auth";
-import {
-  fetchFilteredFilmsDaVedere,
-  fetchTotalFilmsDaVedere,
-} from "@/app/lib/data";
+import { fetchTotalFilmsDaVedere } from "@/app/lib/data";
 import { FilmPage } from "@/app/types/filmPage";
 
 export default async function Page(props: {

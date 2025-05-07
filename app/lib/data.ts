@@ -60,6 +60,7 @@ export async function fetchFilteredFilmsDaVedere(userId: string, currentPage: nu
   }
 }
 
+
 export async function fetchTotalFilmsDaVedere(userId: string) {
   try {
     const result = await sql`
