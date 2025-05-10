@@ -93,9 +93,6 @@ export async function addFilmToDaVedere(film: Film, userId: string) {
     const response = await fetchImdbId(film.id);
     const imdb = await response.json();
 
-    console.log("imdb: ", imdb);
-    console.log("film: ", film);
-
     const existing = await sql`
       SELECT 1 FROM da_vedere
       WHERE themoviedb_id = ${tmdbId} AND user_id = ${userId}

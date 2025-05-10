@@ -31,11 +31,6 @@ export default async function InvoicesTable({
     const response = await fetchFilteredFilms(query, currentPage);
     const films = await response.json();
 
-    console.log(
-      "Risultato fetchFilteredFilms:",
-      JSON.stringify(films, null, 2)
-    );
-
     results = Array.isArray(films?.results) ? films.results : [];
   } else if (page === FilmPage.DaVedere && userId) {
     results = (await fetchFilteredFilmsDaVedere(

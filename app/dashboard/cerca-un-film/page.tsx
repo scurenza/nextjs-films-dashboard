@@ -39,10 +39,7 @@ export default async function Page(props: {
       </Suspense>
       {query && (
         <div className="mt-5 flex w-full justify-center">
-          <Pagination
-            totalPages={totalPagesFilms.total_pages}
-            currentPage={1}
-          />
+          <Pagination totalPages={totalPagesFilms.total_pages} />
         </div>
       )}
     </div>
