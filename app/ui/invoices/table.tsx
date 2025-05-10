@@ -43,8 +43,9 @@ export default async function InvoicesTable({
     )) as unknown as Film[];
   }
 
-  function formatDate(dateString: string) {
-    if (!dateString) return "Data non disponibile";
+  function formatDate(dateString?: string) {
+    if (!dateString || typeof dateString !== "string")
+      return "Data non disponibile";
 
     const date = new Date(dateString);
 
