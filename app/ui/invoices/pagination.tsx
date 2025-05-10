@@ -19,7 +19,7 @@ export default function Pagination({
     currentPageProp ?? (Number(searchParams.get("page")) || 1);
 
   const createPageURL = (pageNumber: number | string) => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
     params.set("page", pageNumber.toString());
     return `${pathname}?${params.toString()}`;
   };
