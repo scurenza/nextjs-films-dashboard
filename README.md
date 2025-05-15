@@ -2,6 +2,8 @@
 
 Una web app realizzata con [Next.js](https://nextjs.org/) che permette di cercare film tramite l’API di The Movie DB, salvarli in due liste personalizzate ("Da Vedere" e "Visti") e gestire l'autenticazione tramite email/password.
 
+Ecco il link: [App](https://filmdashboard.vercel.app/)
+
 ## 🚀 Funzionalità principali
 
 - 🔎 **Ricerca film** usando [TheMovieDB API](https://www.themoviedb.org/documentation/api)
